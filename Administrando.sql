@@ -12,8 +12,8 @@ IN GROUP
 IN ROLE (//Quando cria um usuário ira pertencer a essa ROLE)
 ROLE //(A ROLE)
 
-ADMIN (Usada junto com ROLE, todas as roles passaram
-a fazer parte de ROLE e terão acessos administrativos)
+//ADMIN (Usada junto com ROLE, todas as roles passaram
+//a fazer parte de ROLE e terão acessos administrativos)
 
 CREATE ROLE administradores
 	CREATEDB
@@ -38,26 +38,33 @@ CREATE ROLE alunos
 	NOBYPASSRLS
 	CONNECTION LIMIT 90;
 	
-Associação entre rolesQuando uma role assume as permissões de outras role.
-Necessário a opção INHERIT
+//Associação entre rolesQuando uma role assume as permissões de outras role.
+//Necessário a opção INHERIT
 
-No momento de criarção da role:
+//No momento de criarção da role:
 	- IN ROLE (Passa a pertencer a role informada)
 	- ROLE (a role informada passa a pertencer a nova role)
 	
-Ou após a criação da role:
+//Ou após a criação da role:
 	- GRANT [role a ser concedida] TO [role a assumir as permissões]
 	
 	//VAMOS A PRÁTICA
 	
 CREATE ROLE professores
-	NOCREATEDB
+	NOCREATEDB 
 	NOCREATEROLE
 	INHERIT
 	NOLOGIN
 	NOBYPASSRLS
-	CONNECTION LIMIT -1;
+	CONNECTION LIMIT 10;
 	
+	//verificar se a role foi criada
+
+	\du
+	(ou)
+	SELECT * FROM pr_roles;	
+
+
 CREATE ROLE daniel LOGIN CONNECTION LIMIT 1 PASSWORD '123' IN ROLE professores
 	- A role daniel passa a assumir as permissões da role professores
 	
@@ -73,4 +80,15 @@ REVOKE [role que será revogada] FROM [quem terá suas permissões revogadas]
 
 REVOKE professores FROM daniel;
 
+	//Dropar
+	DROP ROLE daniel
 
+Exemplos:
+CREATE TABLE teste {nome varchar}
+GRANT ALL ON TABLE teste TO professores;
+CREATE ROLE daniel LOGIN PASSWORD '123';
+CREATE ROLE daniel INHERIT LOGIN PASSOWRD '123' IN ROLE professores;
+
+REVOKE professores FROM daniel
+
+$psql -U daniel auladb
